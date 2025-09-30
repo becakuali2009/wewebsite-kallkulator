@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kalkulator Eky + Konversi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root { --btn-bg:#333; --btn-text:#eee; --btn-hover:#444; --card-bg:rgba(0,0,0,0.5); --border:#555; --text:#fff; }
+body { margin:0; height:100vh; font-family:Arial,sans-serif; background:no-repeat center center fixed; background-size:cover; color:var(--text); overflow:hidden; transition:background 0.6s ease-in-out; }
+.judul-luar { text-align:center; margin-top:20px; font-size:32px; font-weight:bold; display:flex; justify-content:center; gap:2px; flex-wrap:wrap; }
+.judul-luar span { display:inline-block; background: linear-gradient(270deg,#ff0000,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#7a00ff,#ff00ab,#ff0000); background-size:1800% 1800%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:1px 1px 3px rgba(0,0,0,0.4); }
+@keyframes rainbow{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+@keyframes glitch{0%{transform:translate(0,0);}20%{transform:translate(-2px,2px);}40%{transform:translate(2px,-2px);}60%{transform:translate(-1px,1px);}80%{transform:translate(1px,-1px);}100%{transform:translate(0,0);}}
+@keyframes ngedot{0%,100%{transform:scale(1);}50%{transform:scale(1.4);}}
+@keyframes freeze{0%,40%,100%{opacity:1;transform:scale(1);}45%,55%{opacity:0.3;transform:scale(0.95);}60%{opacity:1;}}
+@keyframes wave{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+@keyframes jedag{0%,100%{transform:scale(1);}25%{transform:scale(1.3) rotate(3deg);}50%{transform:scale(0.9) rotate(-3deg);}75%{transform:scale(1.2);}}
+.container { max-width:360px; margin:20px auto 10px; border:1px solid var(--border); border-radius:12px; padding:15px; background:var(--card-bg); position:relative; z-index:1; }
+h2{text-align:center;margin-bottom:15px;}
+.display{width:100%;height:60px;margin-bottom:10px;text-align:right;padding:5px;font-size:22px;border:1px solid var(--border);border-radius:8px;background:inherit;color:inherit;}
+select{width:100%;padding:6px;border-radius:6px;margin:6px 0;font-size:14px;border:1px solid var(--border);background:inherit;color:inherit;}
+option{color:black;}
+.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.button{padding:12px;text-align:center;font-size:18px;cursor:pointer;border-radius:8px;border:1px solid var(--border);background:var(--btn-bg);color:var(--btn-text);transition:background 0.2s;}
+.button:hover{background:var(--btn-hover);}
+.top-btns{position:fixed;top:15px;right:15px;display:flex;gap:10px;z-index:2;}
+.wall-btn{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;background:var(--btn-bg);color:var(--btn-text);font-size:16px;}
+.history{margin-top:15px;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card-bg);font-size:14px;max-height:120px;overflow-y:auto;}
+.history h3{text-align:center;}
+.history-list{list-style:none;padding:0;margin:0;}
+.history-list li{border-bottom:1px solid var(--border);padding:4px 0;}
+.clear-history{margin-top:8px;width:100%;padding:6px;border:none;border-radius:6px;background:var(--btn-bg);color:var(--btn-text);cursor:pointer;font-size:14px;}
+.clear-history:hover{background:var(--btn-hover);}
+</style>
+</head>
+<body>
+
+<div class="top-btns"><button class="wall-btn" onclick="changeWallpaper()">🖼 Wallpaper</button></div>
+<div class="judul-luar" id="judulLuar"></div>
+
+<div class="container">
+<h2>Kalkulator & Konversi</h2>
+<input type="text" class="display" id="display" readonly>
+
+<select id="fromCurrency">
+  <option value="IDR">🇮🇩 IDR - Rupiah</option>
+  <option value="USD">🇺🇸 USD - Dollar</option>
+  <option value="EUR">🇪🇺 EUR - Euro</option>
+  <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+  <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+  <option value="GBP">🇬🇧 GBP - Poundsterling</option>
+  <option value="SAR">🇸🇦 SAR - Riyal</option>
+  <option value="MYR">🇲🇾 MYR - Ringgit</option>
+  <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+  <option value="JPY">🇯🇵 JPY - Yen</option>
+</select>
+
+<select id="toCurrency">
+  <option value="USD">🇺🇸 USD - Dollar</option>
+  <option value="IDR">🇮🇩 IDR - Rupiah</option>
+  <option value="EUR">🇪🇺 EUR - Euro</option>
+  <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+  <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+  <option value="GBP">🇬🇧 GBP - Poundsterling</option>
+  <option value="SAR">🇸🇦 SAR - Riyal</option>
+  <option value="MYR">🇲🇾 MYR - Ringgit</option>
+  <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+  <option value="JPY">🇯🇵 JPY - Yen</option>
+</select>
+
+<div class="buttons">
+<div class="button" onclick="pressNum('1')">1</div>
+<div class="button" onclick="pressNum('2')">2</div>
+<div class="button" onclick="pressNum('3')">3</div>
+<div class="button" onclick="pressOp('+')">+</div>
+
+<div class="button" onclick="pressNum('4')">4</div>
+<div class="button" onclick="pressNum('5')">5</div>
+<div class="button" onclick="pressNum('6')">6</div>
+<div class="button" onclick="pressOp('-')">−</div>
+
+<div class="button" onclick="pressNum('7')">7</div>
+<div class="button" onclick="pressNum('8')">8</div>
+<div class="button" onclick="pressNum('9')">9</div>
+<div class="button" onclick="pressOp('*')">×</div>
+
+<div class="button" onclick="pressNum('0')">0</div>
+<div class="button" onclick="pressOp('/')">÷</div>
+<div class="button" onclick="calculate()">=</div>
+<div class="button" onclick="clearDisplay()">C</div>
+
+<div class="button" style="grid-column: span 4;" onclick="convertCurrency()">🔄 Convert</div>
+</div>
+
+<div class="history">
+<h3>Riwayat</h3>
+<ul class="history-list" id="history-list"></ul>
+<button class="clear-history" onclick="clearHistory()">🗑 Hapus Riwayat</button>
+</div>
+</div>
+
+<script>
+// Wallpaper & animasi judul
+let currentWall=0;
+const wallpapers=[{img:"t",name:"Kalkulator Eky"},{img:"https://i.gifer.com/4Cb2.gif",name:"Kalkulator Eky"},{img:"https://i.gifer.com/4AIE.gif",name:"Kalkulator Eky"}];
+function setJudul(text){ const el=document.getElementById("judulLuar"); el.innerHTML=""; const anims=["glitch","ngedot","freeze","wave","jedag"]; [...text].forEach((c,i)=>{ let span=document.createElement("span"); span.textContent=c; span.style.animation=`rainbow 10s linear infinite, ${anims[Math.floor(Math.random()*anims.length)]} 2s infinite`; span.style.animationDelay=(i*0.15)+"s"; el.appendChild(span); }); }
+function changeWallpaper(){ currentWall=(currentWall+1)%wallpapers.length; document.body.style.backgroundImage=`url(${wallpapers[currentWall].img})`; setJudul(wallpapers[currentWall].name);}
+changeWallpaper();
+
+// Kalkulator & suara
+const display=document.getElementById("display");
+const historyList=document.getElementById("history-list");
+const words={"0":"nol","1":"satu","2":"dua","3":"tiga","4":"empat","5":"lima","6":"enam","7":"tujuh","8":"delapan","9":"sembilan","+":"tambah","-":"kurang","*":"kali","/":"bagi","=":"sama dengan"};
+const audios={};
+for(let k in words){ audios[k]=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q='+encodeURIComponent(words[k])); audios[k].preload='auto'; }
+
+function pressNum(n){ display.value+=n; playSound(n); }
+function pressOp(op){ display.value+=op; playSound(op); }
+function clearDisplay(){ display.value=""; }
+function playSound(k){ if(audios[k]){ try{ audios[k].currentTime=0; audios[k].play(); } catch{ let u=new SpeechSynthesisUtterance(words[k]); u.lang="id-ID"; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } } }
+
+function playResult(res){
+  const str = res.toString();
+  const blockSize = 5;
+  window.speechSynthesis.cancel(); // hentikan semua suara sebelumnya
+  for(let i=0;i<str.length;i+=blockSize){
+    const block=str.slice(i,i+blockSize);
+    setTimeout(()=>{
+      try{ let audio=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=id&client=tw-ob&q='+encodeURIComponent(block)); audio.play(); } 
+      catch{ let u=new SpeechSynthesisUtterance(block); u.lang='id-ID'; window.speechSynthesis.speak(u);}
+    }, (i/blockSize)*1000);
+  }
+}
+
+function calculate(){
+  try{
+    const exp=display.value;
+    const res=eval(exp);
+    display.value=res;
+    addHistory(exp+" = "+res);
+    playSound("=");
+    setTimeout(()=>playResult(res),1000);
+  } catch{ display.value="Error"; }
+}
+
+// Konversi mata uang
+const rates={"IDR":1,"USD":16000,"EUR":17000,"SGD":12000,"AUD":10500,"GBP":19000,"SAR":4300,"MYR":3500,"CAD":11500,"JPY":110};
+function convertCurrency(){
+  let from=document.getElementById("fromCurrency").value;
+  let to=document.getElementById("toCurrency").value;
+  let amount=parseFloat(display.value);
+  if(isNaN(amount)){ display.value="Masukkan angka!"; return; }
+  let inIDR=amount*rates[from];
+  let result=inIDR/rates[to];
+  display.value=result.toFixed(2)+" "+to;
+  addHistory(amount+" "+from+" → "+result.toFixed(2)+" "+to);
+  // Hapus baris ini
+  // setTimeout(()=>playResult(result.toFixed(0)),1000);
+}
+
+// Riwayat
+function addHistory(entry){ let li=document.createElement("li"); li.textContent=entry; historyList.insertBefore(li,historyList.firstChild);}
+function clearHistory(){ historyList.innerHTML=""; }
+</script>
+</body>
+</html>
